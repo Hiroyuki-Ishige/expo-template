@@ -5,7 +5,7 @@
 ## テンプレートの特徴
 
 - **最新のExpo機能**: Expo Router v6、New Architecture、React Compilerなど、最新の機能を採用
-- **コード品質管理**: ESLint、TypeScript strictモード、typed routesなどが設定済み
+- **コード品質管理**: ESLint、Prettier、TypeScript strictモード、typed routesなどが設定済み
 - **テスト環境**: テスト環境のセットアップが完了（今後追加予定）
 - **クリーンな構造**: 不要なボイラープレートを削減し、必要最小限の構成
 - **パスエイリアス**: `@/*` で便利なインポートが可能
@@ -56,7 +56,13 @@ npm run web              # Web版を起動
 
 ```bash
 npm run lint             # ESLintを実行
+npm run format           # Prettierでコードをフォーマット
+npm run format:check     # コードフォーマットをチェック
 ```
+
+**Pre-commit Hook:**
+
+このテンプレートには、Husky + lint-staged を使用したPre-commit hookが設定されています。`git commit` 時に自動的にステージされたファイルに対してESLintとPrettierが実行され、コード品質が保たれます。
 
 ## プロジェクト構造
 
@@ -73,17 +79,22 @@ expo-template/
 ## 設定済みの機能
 
 ### Expo機能
+
 - New Architecture有効化（`newArchEnabled: true`）
 - React Compiler（experimental）
 - Androidエッジツーエッジモード
 - カスタムURLスキーム: `expotemplate://`
 - Typed Routes有効化
 
-### TypeScript
-- Strict mode有効
-- Expoのベース設定を使用
+### コード品質ツール
+
+- **ESLint**: Expo推奨設定 + Prettier統合
+- **Prettier**: コードフォーマッター設定済み
+- **Husky + lint-staged**: Pre-commit hookでコミット前に自動チェック
+- **TypeScript**: Strict mode有効、Expoのベース設定を使用
 
 ### パスエイリアス
+
 - `@/*` がプロジェクトルートにマッピング
 - 例: `import Component from '@/components/MyComponent'`
 

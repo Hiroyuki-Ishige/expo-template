@@ -10,7 +10,7 @@ This is an Expo/React Native project using **Expo Router** for file-based naviga
 
 このリポジトリは、Expo 開発における汎用的なテンプレートリポジトリとして設計されています。以下の特徴を備えています：
 
-- **コード品質管理**: ESLint や TypeScript strict モードなど、コード品質を保つための設定が完備
+- **コード品質管理**: ESLint、Prettier、TypeScript strict モードなど、コード品質を保つための設定が完備
 - **テスト環境**: テスト環境のセットアップが完了（今後追加予定）
 - **ベストプラクティス**: Expo Router、React Compiler、New Architecture など、最新のベストプラクティスを採用
 - **即座に開発開始可能**: 不要なボイラープレートを削減し、すぐにプロダクション開発を開始できる状態
@@ -33,7 +33,35 @@ npm run web              # Start and open on web
 
 ```bash
 npm run lint             # Run ESLint
+npm run format           # Format code with Prettier
+npm run format:check     # Check code formatting
 ```
+
+**Pre-commit Hook:**
+
+- Husky + lint-staged が設定済み
+- コミット前に自動的にステージされたファイルに対して ESLint と Prettier を実行
+- コード品質を保ちながら開発可能
+
+### コード品質ガイドライン（Claude Code向け）
+
+**IMPORTANT**: このリポジトリでは、コード品質の維持を最優先事項としています。
+
+- **必須**: コード変更を行う際は、必ず以下を実行してください：
+  1. `npm run lint` でESLintチェックを実行
+  2. `npm run format` でコードをフォーマット
+  3. エラーや警告がある場合は修正してからコミット
+
+- **コミット前の確認**:
+  - Pre-commit hookが設定されていますが、手動でも品質チェックを実行すること
+  - TypeScriptのエラーがないことを確認
+  - すべてのlint警告を解決すること
+
+- **品質基準**:
+  - ESLintエラー: 0件（必須）
+  - ESLint警告: 可能な限り0件を目指す
+  - Prettierフォーマット: 100%準拠
+  - TypeScriptエラー: 0件（必須）
 
 ## Architecture
 
