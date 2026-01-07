@@ -1,50 +1,120 @@
-# Welcome to your Expo app 👋
+# Expo テンプレートリポジトリ
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+このリポジトリは、Expo/React Native開発のための汎用的なテンプレートリポジトリです。新規プロジェクトを開始する際に、このテンプレートを使用することで、コード品質管理やベストプラクティスが適用された状態からすぐに開発を始めることができます。
 
-## Get started
+## テンプレートの特徴
 
-1. Install dependencies
+- **最新のExpo機能**: Expo Router v6、New Architecture、React Compilerなど、最新の機能を採用
+- **コード品質管理**: ESLint、TypeScript strictモード、typed routesなどが設定済み
+- **テスト環境**: テスト環境のセットアップが完了（今後追加予定）
+- **クリーンな構造**: 不要なボイラープレートを削減し、必要最小限の構成
+- **パスエイリアス**: `@/*` で便利なインポートが可能
+- **マルチプラットフォーム対応**: iOS、Android、Webに対応
 
-   ```bash
-   npm install
-   ```
+## 使い方
 
-2. Start the app
+### 1. このテンプレートから新規リポジトリを作成
 
-   ```bash
-   npx expo start
-   ```
+GitHubの「Use this template」ボタンをクリックして、新しいリポジトリを作成してください。
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### 2. 依存関係のインストール
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 3. 開発サーバーの起動
 
-## Learn more
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+出力されたメニューから、以下のオプションを選択できます：
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- [開発ビルド](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Androidエミュレーター](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOSシミュレーター](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go) - Expo開発を試すための限定的なサンドボックス
 
-## Join the community
+### 4. 開発を開始
 
-Join our community of developers creating universal apps.
+**app** ディレクトリ内のファイルを編集して開発を開始できます。このプロジェクトは[ファイルベースルーティング](https://docs.expo.dev/router/introduction)を使用しています。
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 利用可能なコマンド
+
+### 開発サーバー
+
+```bash
+npx expo start           # 開発サーバーを起動（オプションメニュー付き）
+npm run start            # 上記と同じ
+npm run android          # Android版を起動
+npm run ios              # iOS版を起動
+npm run web              # Web版を起動
+```
+
+### コード品質
+
+```bash
+npm run lint             # ESLintを実行
+```
+
+## プロジェクト構造
+
+```
+expo-template/
+├── app/                 # アプリケーションのメインディレクトリ（Expo Router）
+│   ├── _layout.tsx     # ルートレイアウト（Stack navigator）
+│   └── index.tsx       # ホーム画面
+├── app-example/        # オリジナルのExpoテンプレートファイル（参考用）
+├── assets/             # 画像などのアセット
+└── CLAUDE.md           # Claude Code向けの開発ガイド
+```
+
+## 設定済みの機能
+
+### Expo機能
+- New Architecture有効化（`newArchEnabled: true`）
+- React Compiler（experimental）
+- Androidエッジツーエッジモード
+- カスタムURLスキーム: `expotemplate://`
+- Typed Routes有効化
+
+### TypeScript
+- Strict mode有効
+- Expoのベース設定を使用
+
+### パスエイリアス
+- `@/*` がプロジェクトルートにマッピング
+- 例: `import Component from '@/components/MyComponent'`
+
+## 技術スタック
+
+- React Native 0.81.5
+- React 19.1.0
+- Expo Router v6
+- TypeScript（strict mode）
+
+## 参考資料
+
+Expoでのプロジェクト開発について詳しく知りたい場合は、以下のリソースを参照してください：
+
+- [Expoドキュメント](https://docs.expo.dev/): 基礎や[ガイド](https://docs.expo.dev/guides)で高度なトピックを学習
+- [Expo学習チュートリアル](https://docs.expo.dev/tutorial/introduction/): Android、iOS、Webで動作するプロジェクトを作成するステップバイステップのチュートリアル
+
+## コミュニティ
+
+ユニバーサルアプリを作成する開発者のコミュニティに参加しましょう：
+
+- [Expo on GitHub](https://github.com/expo/expo): オープンソースプラットフォームを見て、貢献する
+- [Discordコミュニティ](https://chat.expo.dev): Expoユーザーとチャットして質問する
+
+## 今後の予定
+
+- [ ] Jestやテストライブラリの設定
+- [ ] コンポーネントライブラリの統合例
+- [ ] 環境変数管理の設定
+- [ ] CIの設定例
+
+---
+
+このテンプレートを使用して、素晴らしいExpoアプリを開発してください！
