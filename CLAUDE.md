@@ -4,104 +4,95 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an Expo/React Native project using **Expo Router** for file-based navigation. The project has been simplified from the default Expo template to provide a clean starting point.
+Expo/React Native project using **Expo Router v6** for file-based navigation. Designed as a template repository for Expo development with code quality tools pre-configured.
 
 ### テンプレートリポジトリとしての目的
 
-このリポジトリは、Expo 開発における汎用的なテンプレートリポジトリとして設計されています。以下の特徴を備えています：
-
-- **コード品質管理**: ESLint、Prettier、TypeScript strict モードなど、コード品質を保つための設定が完備
-- **テスト環境**: テスト環境のセットアップが完了（今後追加予定）
-- **ベストプラクティス**: Expo Router、React Compiler、New Architecture など、最新のベストプラクティスを採用
-- **即座に開発開始可能**: 不要なボイラープレートを削減し、すぐにプロダクション開発を開始できる状態
-
-新規プロジェクトを開始する際は、このリポジトリをテンプレートとして使用することで、初期セットアップの時間を大幅に短縮できます。
+- **コード品質管理**: ESLint、Prettier、TypeScript strict モード、Husky + lint-staged
+- **ベストプラクティス**: Expo Router v6、React Compiler、New Architecture
+- **マルチプラットフォーム**: iOS、Android、Web対応
 
 ## Development Commands
 
-### Starting the Development Server
-
 ```bash
-npx expo start           # Start dev server with options menu
-npm run start            # Same as above
-npm run android          # Start and open on Android
-npm run ios              # Start and open on iOS
-npm run web              # Start and open on web
-```
+# Development Server
+npx expo start           # Start dev server (with options menu)
+npx expo start -c        # Start with cache cleared
+npm run android          # Start on Android
+npm run ios              # Start on iOS
+npm run web              # Start on Web
 
-### Code Quality
-
-```bash
+# Code Quality
 npm run lint             # Run ESLint
-npm run format           # Format code with Prettier
-npm run format:check     # Check code formatting
+npm run format           # Format with Prettier
+npm run format:check     # Check formatting
 ```
 
-**Pre-commit Hook:**
+## コード品質ガイドライン（Claude Code向け）
 
-- Husky + lint-staged が設定済み
-- コミット前に自動的にステージされたファイルに対して ESLint と Prettier を実行
-- コード品質を保ちながら開発可能
+**IMPORTANT**: コード変更後は必ず以下を実行：
 
-### コード品質ガイドライン（Claude Code向け）
+```bash
+npm run lint && npm run format
+```
 
-**IMPORTANT**: このリポジトリでは、コード品質の維持を最優先事項としています。
+**品質基準:**
 
-- **必須**: コード変更を行う際は、必ず以下を実行してください：
-  1. `npm run lint` でESLintチェックを実行
-  2. `npm run format` でコードをフォーマット
-  3. エラーや警告がある場合は修正してからコミット
+- ESLintエラー/警告: 0件
+- Prettierフォーマット: 100%準拠
+- TypeScriptエラー: 0件
 
-- **コミット前の確認**:
-  - Pre-commit hookが設定されていますが、手動でも品質チェックを実行すること
-  - TypeScriptのエラーがないことを確認
-  - すべてのlint警告を解決すること
+## 作業フロー（Claude Code向け）
 
-- **品質基準**:
-  - ESLintエラー: 0件（必須）
-  - ESLint警告: 可能な限り0件を目指す
-  - Prettierフォーマット: 100%準拠
-  - TypeScriptエラー: 0件（必須）
+**IMPORTANT**: 以下の作業を行う前に、必ず計画を提示してユーザーの承認を得てください：
+
+- 新しいライブラリやパッケージのセットアップ
+- アーキテクチャに影響する変更
+- 複数ファイルにまたがる大規模な変更
+- 設定ファイルの変更
+
+**手順:**
+
+1. 作業内容の計画を立てる
+2. 計画をユーザーに提示する
+3. ユーザーから承認（Yes）を得てから実行する
 
 ## Architecture
 
 ### Routing Structure
 
-- Uses **Expo Router v6** with file-based routing
-- All routes are defined in the `app/` directory
-- Current structure is minimal: just `app/_layout.tsx` (root layout with Stack navigator) and `app/index.tsx` (home screen)
-- The project has **typed routes** enabled via `experiments.typedRoutes` in app.json
+- **Expo Router v6** with file-based routing
+- Routes in `app/` directory
+- `app/_layout.tsx`: Root layout (Stack navigator)
+- `app/index.tsx`: Home screen
+- **Typed routes** enabled via `experiments.typedRoutes`
 
 ### Path Aliases
 
-- `@/*` maps to the project root (configured in tsconfig.json)
-- Use `@/` for imports: `import Component from '@/components/MyComponent'`
+```tsx
+// @/* maps to project root (configured in tsconfig.json)
+import Component from '@/components/MyComponent';
+```
 
-### Key Configuration
+### Key Configuration (app.json)
 
-**Expo Features Enabled:**
-
-- New Architecture: `newArchEnabled: true` in app.json
-- React Compiler: experimental feature enabled
+- `newArchEnabled: true` - New Architecture
+- `experiments.reactCompiler: true` - React Compiler
+- `experiments.typedRoutes: true` - Typed Routes
+- `scheme: "expotemplate"` - Custom URL scheme
 - Android edge-to-edge mode enabled
-- Custom URL scheme: `expotemplate://`
 
-**TypeScript:**
+### Project Structure
 
-- Strict mode enabled
-- Using Expo's base TypeScript configuration
+```
+app/           # Expo Router pages
+app-example/   # Original Expo template files (reference)
+assets/        # Images and assets
+```
 
-### Project Structure Notes
+## Tech Stack
 
-- The `app-example/` directory contains the original Expo template files (tabs, themed components, etc.) for reference
-- The active app is in `app/` and has been stripped down to basics
-- Assets are in `assets/images/`
-- React Native 0.81.5 with React 19.1.0
-
-## Platform Support
-
-This is a universal app supporting:
-
-- iOS (with tablet support)
-- Android (with adaptive icons and edge-to-edge)
-- Web (static output)
+- React Native 0.81.5
+- React 19.1.0
+- Expo SDK 54
+- TypeScript (strict mode)
