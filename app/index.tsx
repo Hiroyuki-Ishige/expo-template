@@ -30,6 +30,8 @@ import {
 } from 'tamagui';
 import { z } from 'zod';
 
+import { useCounterStore } from '@/stores/counter-store';
+
 const occupationOptions = [
   { value: 'student', label: '学生' },
   { value: 'employee', label: '会社員' },
@@ -70,6 +72,12 @@ type FormData = z.infer<typeof formSchema>;
 export default function Index() {
   const [text, setText] = useState('');
   const [switchOn, setSwitchOn] = useState(false);
+  const {
+    count,
+    increment,
+    decrement,
+    reset: resetCounter,
+  } = useCounterStore();
 
   const {
     control,
@@ -391,6 +399,30 @@ export default function Index() {
               <Button theme="blue" onPress={handleSubmit(onSubmit)}>
                 送信
               </Button>
+            </YStack>
+          </Card>
+
+          {/* State Management Demo (Zustand) */}
+          <Card padded elevate>
+            <H2 size="$6" style={{ marginBottom: 4 }}>
+              State Management
+            </H2>
+            <Paragraph
+              style={{ color: '#666', marginBottom: 12, fontSize: 12 }}
+            >
+              Zustand カウンターサンプル
+            </Paragraph>
+            <YStack gap="$3" style={{ alignItems: 'center' }}>
+              <Text style={{ fontSize: 48, fontWeight: 'bold' }}>{count}</Text>
+              <XStack gap="$2">
+                <Button theme="red" onPress={decrement}>
+                  -1
+                </Button>
+                <Button onPress={resetCounter}>Reset</Button>
+                <Button theme="blue" onPress={increment}>
+                  +1
+                </Button>
+              </XStack>
             </YStack>
           </Card>
 

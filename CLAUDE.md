@@ -11,6 +11,7 @@ Expo/React Native template repository with pre-configured code quality tools.
 - Expo Router v6 (file-based routing)
 - New Architecture + React Compiler enabled
 - Tamagui UI framework
+- Zustand (state management)
 - ESLint + Prettier + Husky (pre-commit hooks)
 - TypeScript strict mode
 
@@ -91,6 +92,24 @@ const { control, handleSubmit } = useForm<FormData>({
 ```
 
 Use `KeyboardAvoidingView` wrapper for forms on iOS.
+
+### State Management
+
+Zustand pattern (stores in `stores/` directory):
+
+```typescript
+import { create } from 'zustand';
+
+interface ExampleState {
+  value: string;
+  setValue: (value: string) => void;
+}
+
+export const useExampleStore = create<ExampleState>((set) => ({
+  value: '',
+  setValue: (value) => set({ value }),
+}));
+```
 
 ### Path Aliases
 
