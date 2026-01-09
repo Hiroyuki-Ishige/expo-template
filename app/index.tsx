@@ -1,4 +1,3 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Picker } from '@react-native-picker/picker';
 import { useState } from 'react';
@@ -7,7 +6,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   TextInput,
@@ -39,6 +37,16 @@ const occupationOptions = [
   { value: 'other', label: 'その他' },
 ];
 
+const currentYear = new Date().getFullYear();
+const yearOptions = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => ({
+  value: String(1900 + i),
+  label: `${1900 + i}年`,
+})).reverse();
+const monthOptions = Array.from({ length: 12 }, (_, i) => ({
+  value: String(i + 1),
+  label: `${i + 1}月`,
+}));
+
 const formSchema = z.object({
   name: z.string().min(2, '名前は2文字以上で入力してください'),
   email: z.string().email('有効なメールアドレスを入力してください'),
@@ -49,7 +57,8 @@ const formSchema = z.object({
       (val) => !val || (!isNaN(Number(val)) && Number(val) > 0),
       '有効な年齢を入力してください'
     ),
-  birthDate: z.date().optional(),
+  birthYear: z.string().optional(),
+  birthMonth: z.string().optional(),
   occupation: z.string().optional(),
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: '利用規約に同意してください',
@@ -61,7 +70,6 @@ type FormData = z.infer<typeof formSchema>;
 export default function Index() {
   const [text, setText] = useState('');
   const [switchOn, setSwitchOn] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const {
     control,
@@ -74,16 +82,12 @@ export default function Index() {
       name: '',
       email: '',
       age: '',
-      birthDate: undefined,
+      birthYear: '',
+      birthMonth: '',
       occupation: '',
       agreeToTerms: false,
     },
   });
-
-  const formatDate = (date: Date | undefined) => {
-    if (!date) return '未選択';
-    return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
-  };
 
   const getOccupationLabel = (value: string | undefined) => {
     if (!value) return '未選択';
@@ -91,13 +95,22 @@ export default function Index() {
     return option?.label || '未選択';
   };
 
+  const formatBirthDate = (
+    year: string | undefined,
+    month: string | undefined
+  ) => {
+    if (!year && !month) return '未入力';
+    if (year && month) return `${year}年${month}月`;
+    if (year) return `${year}年`;
+    return `${month}月`;
+  };
+
   const onSubmit = (data: FormData) => {
     Alert.alert(
       '送信成功',
-      `名前: ${data.name}\nメール: ${data.email}\n年齢: ${data.age || '未入力'}\n生年月日: ${formatDate(data.birthDate)}\n職業: ${getOccupationLabel(data.occupation)}`
+      `名前: ${data.name}\nメール: ${data.email}\n年齢: ${data.age || '未入力'}\n生年月: ${formatBirthDate(data.birthYear, data.birthMonth)}\n職業: ${getOccupationLabel(data.occupation)}`
     );
     reset();
-    setShowDatePicker(false);
   };
 
   return (
@@ -113,7 +126,7 @@ export default function Index() {
           paddingTop: 60,
           paddingBottom: 40,
         }}
-        keyboardShouldPersistTaps="handled"
+        keyboardShouldPersistTaps="always"
       >
         <YStack
           gap="$4"
@@ -219,55 +232,89 @@ export default function Index() {
                 )}
               </YStack>
 
-              {/* Birth Date Field */}
+              {/* Birth Year/Month Fields */}
               <YStack>
-                <Label>生年月日（任意）</Label>
-                <Controller
-                  control={control}
-                  name="birthDate"
-                  render={({ field: { onChange, value } }) => (
-                    <YStack>
-                      <Pressable onPress={() => setShowDatePicker(true)}>
-                        <TextInput
-                          editable={false}
-                          value={value ? formatDate(value) : ''}
-                          placeholder="日付を選択"
-                          pointerEvents="none"
-                          style={styles.input}
-                          placeholderTextColor="#999"
-                        />
-                      </Pressable>
-                      {showDatePicker && (
-                        <DateTimePicker
-                          value={value || new Date()}
-                          mode="date"
-                          display={
-                            Platform.OS === 'ios' ? 'spinner' : 'default'
-                          }
-                          onChange={(_, selectedDate) => {
-                            if (Platform.OS === 'android') {
-                              setShowDatePicker(false);
-                            }
-                            if (selectedDate) {
-                              onChange(selectedDate);
-                            }
+                <Label>生年月（任意）</Label>
+                <XStack gap="$2">
+                  {/* Year Picker */}
+                  <View style={{ flex: 1 }}>
+                    <Controller
+                      control={control}
+                      name="birthYear"
+                      render={({ field: { onChange, value } }) => (
+                        <View
+                          style={{
+                            borderWidth: 1,
+                            borderColor: '#ccc',
+                            borderRadius: 8,
+                            backgroundColor: '#fff',
+                            overflow: 'hidden',
                           }}
-                          maximumDate={new Date()}
-                        />
-                      )}
-                      {Platform.OS === 'ios' && showDatePicker && (
-                        <Button
-                          size="$3"
-                          theme="blue"
-                          onPress={() => setShowDatePicker(false)}
-                          style={{ marginTop: 8 }}
                         >
-                          完了
-                        </Button>
+                          <Picker
+                            selectedValue={value}
+                            onValueChange={onChange}
+                            style={{
+                              height: Platform.OS === 'ios' ? 150 : 50,
+                              width: '100%',
+                            }}
+                            itemStyle={{
+                              height: Platform.OS === 'ios' ? 150 : 50,
+                            }}
+                          >
+                            <Picker.Item label="年" value="" />
+                            {yearOptions.map((item) => (
+                              <Picker.Item
+                                key={item.value}
+                                label={item.label}
+                                value={item.value}
+                              />
+                            ))}
+                          </Picker>
+                        </View>
                       )}
-                    </YStack>
-                  )}
-                />
+                    />
+                  </View>
+                  {/* Month Picker */}
+                  <View style={{ flex: 1 }}>
+                    <Controller
+                      control={control}
+                      name="birthMonth"
+                      render={({ field: { onChange, value } }) => (
+                        <View
+                          style={{
+                            borderWidth: 1,
+                            borderColor: '#ccc',
+                            borderRadius: 8,
+                            backgroundColor: '#fff',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <Picker
+                            selectedValue={value}
+                            onValueChange={onChange}
+                            style={{
+                              height: Platform.OS === 'ios' ? 150 : 50,
+                              width: '100%',
+                            }}
+                            itemStyle={{
+                              height: Platform.OS === 'ios' ? 150 : 50,
+                            }}
+                          >
+                            <Picker.Item label="月" value="" />
+                            {monthOptions.map((item) => (
+                              <Picker.Item
+                                key={item.value}
+                                label={item.label}
+                                value={item.value}
+                              />
+                            ))}
+                          </Picker>
+                        </View>
+                      )}
+                    />
+                  </View>
+                </XStack>
               </YStack>
 
               {/* Occupation Dropdown */}

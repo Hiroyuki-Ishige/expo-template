@@ -4,19 +4,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Expo/React Native project using **Expo Router v6** for file-based navigation. Designed as a template repository for Expo development with code quality tools pre-configured.
+Expo/React Native template repository with pre-configured code quality tools.
 
-### テンプレートリポジトリとしての目的
+**主な特徴:**
 
-- **コード品質管理**: ESLint、Prettier、TypeScript strict モード、Husky + lint-staged
-- **ベストプラクティス**: Expo Router v6、React Compiler、New Architecture
-- **マルチプラットフォーム**: iOS、Android、Web対応
+- Expo Router v6 (file-based routing)
+- New Architecture + React Compiler enabled
+- Tamagui UI framework
+- ESLint + Prettier + Husky (pre-commit hooks)
+- TypeScript strict mode
 
 ## Development Commands
 
 ```bash
 # Development Server
-npx expo start           # Start dev server (with options menu)
+npx expo start           # Start dev server
 npx expo start -c        # Start with cache cleared (use after adding native modules)
 npm run android          # Start on Android
 npm run ios              # Start on iOS
@@ -28,10 +30,10 @@ npm run format           # Format with Prettier
 npm run format:check     # Check formatting
 
 # Package Installation
-npx expo install <pkg>   # Install Expo-compatible version of a package
+npx expo install <pkg>   # Install Expo-compatible version
 ```
 
-## コード品質ガイドライン（Claude Code向け）
+## コード品質ガイドライン
 
 **IMPORTANT**: コード変更後は必ず以下を実行：
 
@@ -39,13 +41,9 @@ npx expo install <pkg>   # Install Expo-compatible version of a package
 npm run lint && npm run format
 ```
 
-**品質基準:**
+品質基準: ESLintエラー/警告 0件、Prettierフォーマット 100%準拠、TypeScriptエラー 0件
 
-- ESLintエラー/警告: 0件
-- Prettierフォーマット: 100%準拠
-- TypeScriptエラー: 0件
-
-## 作業フロー（Claude Code向け）
+## 作業フロー
 
 **IMPORTANT**: 以下の作業を行う前に、必ず計画を提示してユーザーの承認を得てください：
 
@@ -54,81 +52,59 @@ npm run lint && npm run format
 - 複数ファイルにまたがる大規模な変更
 - 設定ファイルの変更
 
-**手順:**
-
-1. 作業内容の計画を立てる
-2. 計画をユーザーに提示する
-3. ユーザーから承認（Yes）を得てから実行する
-
 ## Architecture
 
-### Routing Structure
+### Routing
 
-- **Expo Router v6** with file-based routing
 - Routes in `app/` directory
-- `app/_layout.tsx`: Root layout (Stack navigator with providers)
-- `app/index.tsx`: Home screen
-- **Typed routes** enabled via `experiments.typedRoutes`
+- `app/_layout.tsx`: Root layout with provider hierarchy
+- Typed routes enabled (`experiments.typedRoutes`)
 
-### UI Framework: Tamagui + React Native
+### Provider Hierarchy (in \_layout.tsx)
 
-- Configuration: `tamagui.config.ts` (uses `@tamagui/config/v4` defaults)
-- Provider hierarchy in `_layout.tsx`:
-  ```
-  TamaguiProvider → PortalProvider → ThemeProvider → Stack
-  ```
-- Supports dark/light theme via `useColorScheme()`
-- **IMPORTANT**: Use React Native's `TextInput` instead of Tamagui's `Input` for reliable keyboard behavior on iOS
-- Tamagui components: Button, Card, Checkbox, Label, Text, XStack, YStack, etc.
+```
+TamaguiProvider → PortalProvider → ThemeProvider → Stack
+```
+
+### UI Components
+
+**IMPORTANT - Known Issues:**
+
+- **TextInput**: Use React Native's `TextInput` instead of Tamagui's `Input` for reliable keyboard behavior on iOS
+- **Dropdown**: Use `@react-native-picker/picker` instead of Tamagui Select on native platforms
+
+**Recommended native components:**
+
+- Text input: `TextInput` from `react-native`
+- Year/Month picker: `@react-native-picker/picker` (2つのPickerを並べて年月選択)
+- Dropdown: `@react-native-picker/picker`
+- Checkbox: Tamagui `Checkbox` with `Check` icon from `@tamagui/lucide-icons`
 
 ### Form Handling
 
-- **React Hook Form** + **Zod** for validation
-- Pattern: `useForm` with `zodResolver(schema)`
-- Controller component for controlled inputs
-- Use `KeyboardAvoidingView` wrapper for forms on iOS
+React Hook Form + Zod pattern:
 
-### Native Components
+```tsx
+const { control, handleSubmit } = useForm<FormData>({
+  resolver: zodResolver(schema),
+});
+```
 
-For platform-specific UI:
-
-- Text input: React Native `TextInput` (not Tamagui Input)
-- Date picker: `@react-native-community/datetimepicker`
-- Dropdown: `@react-native-picker/picker` (more reliable than Tamagui Select on native)
-- Checkbox: Tamagui `Checkbox` with `Check` icon from `@tamagui/lucide-icons`
+Use `KeyboardAvoidingView` wrapper for forms on iOS.
 
 ### Path Aliases
 
 ```tsx
-// @/* maps to project root (configured in tsconfig.json)
-import Component from '@/components/MyComponent';
+import Component from '@/components/MyComponent'; // @/* → project root
 ```
 
 ### Key Configuration (app.json)
 
-- `newArchEnabled: true` - New Architecture
-- `experiments.reactCompiler: true` - React Compiler
-- `experiments.typedRoutes: true` - Typed Routes
-- `scheme: "expotemplate"` - Custom URL scheme
-- Android edge-to-edge mode enabled
-
-### Project Structure
-
-```
-app/           # Expo Router pages
-app-example/   # Original Expo template files (reference)
-assets/        # Images and assets
-```
-
-## Tech Stack
-
-- React Native 0.81.5
-- React 19.1.0
-- Expo SDK 54
-- Tamagui (UI components)
-- React Hook Form + Zod (form validation)
-- TypeScript (strict mode)
+- `newArchEnabled: true`
+- `experiments.reactCompiler: true`
+- `experiments.typedRoutes: true`
+- `scheme: "expotemplate"`
 
 ## iOS Simulator Tips
 
-- **Keyboard not showing?** Toggle hardware keyboard: `Cmd + Shift + K` or Menu → I/O → Keyboard → Connect Hardware Keyboard
+**Keyboard not showing?** Toggle: `Cmd + Shift + K` or Menu → I/O → Keyboard → Connect Hardware Keyboard
