@@ -12,6 +12,7 @@ Expo/React Native template repository with pre-configured code quality tools.
 - New Architecture + React Compiler enabled
 - Tamagui UI framework
 - Zustand (state management)
+- Jest + jest-expo (unit testing)
 - ESLint + Prettier + Husky (pre-commit hooks)
 - TypeScript strict mode
 
@@ -24,6 +25,11 @@ npx expo start -c        # Start with cache cleared (use after adding native mod
 npm run android          # Start on Android
 npm run ios              # Start on iOS
 npm run web              # Start on Web
+
+# Testing
+npm run test             # Run all tests
+npm run test:watch       # Run tests in watch mode
+npm run test:coverage    # Run tests with coverage report
 
 # Code Quality
 npm run lint             # Run ESLint
@@ -115,6 +121,32 @@ export const useExampleStore = create<ExampleState>((set) => ({
 
 ```tsx
 import Component from '@/components/MyComponent'; // @/* → project root
+```
+
+### Testing
+
+Jest + jest-expo + React Native Testing Library:
+
+- Test files: `__tests__/` directory
+- Configuration: `jest.config.js`, `jest.setup.js`
+- Run tests: `npm test`
+
+Zustand store test example:
+
+```typescript
+import { useCounterStore } from '@/stores/counter-store';
+
+describe('useCounterStore', () => {
+  beforeEach(() => {
+    useCounterStore.setState({ count: 0 }); // Reset state
+  });
+
+  it('should increment count', () => {
+    const { increment } = useCounterStore.getState();
+    increment();
+    expect(useCounterStore.getState().count).toBe(1);
+  });
+});
 ```
 
 ### Key Configuration (app.json)
