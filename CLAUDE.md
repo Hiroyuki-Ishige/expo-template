@@ -30,6 +30,8 @@ npm run web              # Start on Web
 npm run test             # Run all tests
 npm run test:watch       # Run tests in watch mode
 npm run test:coverage    # Run tests with coverage report
+npm test -- __tests__/stores/counter-store.test.ts  # Run specific file
+npm test -- --testNamePattern="increment"           # Run tests matching pattern
 
 # Code Quality
 npm run lint             # Run ESLint
