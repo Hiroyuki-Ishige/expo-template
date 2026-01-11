@@ -1,0 +1,78 @@
+appId: host.exp.Exponent
+---
+# フォーム入力テスト
+
+# Expo Go でプロジェクトを開く
+- openLink: exp://localhost:8081
+
+# 開発者メニューが表示されていれば閉じる
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+
+# フォーム入力欄までスクロール
+- scrollUntilVisible:
+    element:
+      id: "input-name"
+    direction: UP
+    timeout: 30000
+
+# 開発者メニューが表示されたら閉じる
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+
+# 名前入力欄が見えることを確認
+- assertVisible:
+    id: "input-name"
+
+# 名前を入力（既存テキストをクリアしてから）
+- tapOn:
+    id: "input-name"
+- eraseText: 50
+- inputText: "TestUser"
+- pressKey: Enter
+
+# メールアドレス入力欄までスクロールして確実に表示
+- scrollUntilVisible:
+    element:
+      id: "input-email"
+    direction: DOWN
+    timeout: 10000
+
+# メールアドレスを入力
+- tapOn:
+    id: "input-email"
+- eraseText: 50
+- inputText: "test@example.com"
+- pressKey: Enter
+
+# 利用規約までスクロール
+- scrollUntilVisible:
+    element:
+      text: "利用規約に同意する"
+    direction: DOWN
+    timeout: 20000
+
+# 開発者メニューが表示されたら閉じる
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+
+# 利用規約に同意
+- tapOn: "利用規約に同意する"
+
+# 送信ボタンをタップ
+- tapOn: "送信"
+
+# アラートが表示されることを確認
+- assertVisible: "送信成功"
+
+# アラートを閉じる
+- tapOn: "OK"

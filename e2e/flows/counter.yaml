@@ -1,0 +1,52 @@
+appId: host.exp.Exponent
+---
+# カウンター機能テスト
+
+# Expo Go でプロジェクトを開く
+- openLink: exp://localhost:8081
+
+# 開発者メニューが表示されていれば閉じる
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+
+# 前のテストからのアラートが残っていれば閉じる
+- runFlow:
+    when:
+      visible: "OK"
+    commands:
+      - tapOn: "OK"
+
+# Resetボタンまでスクロール
+- scrollUntilVisible:
+    element:
+      text: "Reset"
+    direction: DOWN
+    timeout: 30000
+
+# 開発者メニューが再度表示されたら閉じる
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+
+# Resetボタンが見えることを確認
+- assertVisible: "Reset"
+
+# Resetボタンをタップして初期状態にする
+- tapOn: "Reset"
+
+# +1ボタンをタップ
+- tapOn: "+1"
+
+# もう一度+1ボタンをタップ
+- tapOn: "+1"
+
+# -1ボタンをタップ
+- tapOn: "-1"
+
+# Resetボタンをタップ
+- tapOn: "Reset"

@@ -13,6 +13,7 @@ Expo/React Native template repository with pre-configured code quality tools.
 - Tamagui UI framework
 - Zustand (state management)
 - Jest + jest-expo (unit testing)
+- Maestro (E2E testing)
 - ESLint + Prettier + Husky (pre-commit hooks)
 - TypeScript strict mode
 
@@ -26,12 +27,17 @@ npm run android          # Start on Android
 npm run ios              # Start on iOS
 npm run web              # Start on Web
 
-# Testing
+# Unit Testing
 npm run test             # Run all tests
 npm run test:watch       # Run tests in watch mode
 npm run test:coverage    # Run tests with coverage report
 npm test -- __tests__/stores/counter-store.test.ts  # Run specific file
 npm test -- --testNamePattern="increment"           # Run tests matching pattern
+
+# E2E Testing (Maestro)
+npm run e2e              # Run all E2E tests
+npm run e2e:form         # Run form submission test
+npm run e2e:counter      # Run counter test
 
 # Code Quality
 npm run lint             # Run ESLint
@@ -44,13 +50,18 @@ npx expo install <pkg>   # Install Expo-compatible version
 
 ## コード品質ガイドライン
 
-**IMPORTANT**: コード変更後は必ず以下を実行：
+**Pre-commit Hook (自動実行)**: コミット時に以下が自動実行されます：
+
+1. `lint-staged` - ステージされたファイルにESLint + Prettierを適用
+2. `npm test` - 全テストを実行
+
+**手動実行**:
 
 ```bash
 npm run lint && npm run format
 ```
 
-品質基準: ESLintエラー/警告 0件、Prettierフォーマット 100%準拠、TypeScriptエラー 0件
+品質基準: ESLintエラー/警告 0件、Prettierフォーマット 100%準拠、TypeScriptエラー 0件、テスト全件パス
 
 ## 作業フロー
 
@@ -125,7 +136,7 @@ export const useExampleStore = create<ExampleState>((set) => ({
 import Component from '@/components/MyComponent'; // @/* → project root
 ```
 
-### Testing
+### Testing (Unit)
 
 Jest + jest-expo + React Native Testing Library:
 
@@ -149,6 +160,67 @@ describe('useCounterStore', () => {
     expect(useCounterStore.getState().count).toBe(1);
   });
 });
+```
+
+### E2E Testing (Maestro)
+
+Maestro を使用したE2Eテスト:
+
+- Flow files: `e2e/flows/` directory
+- Platform: iOS Simulator + Expo Go
+
+**セットアップ (初回のみ):**
+
+```bash
+brew tap mobile-dev-inc/tap
+brew install mobile-dev-inc/tap/maestro
+```
+
+**テスト実行:**
+
+```bash
+# 前提: iOS Simulator で Expo Go アプリを起動しておく
+npx expo start --ios
+# 別ターミナルで:
+npm run e2e           # 全E2Eテスト実行
+npm run e2e:form      # フォーム入力テスト
+npm run e2e:counter   # カウンターテスト
+```
+
+**Expo Go の制限事項:**
+
+- testID は React Native の `TextInput` では動作するが、Tamagui コンポーネントでは認識されない
+- テキストベースのセレクター (`tapOn: "ボタン名"`) を推奨
+- 日本語入力は予測変換が問題を起こすため、ASCII テキストを使用するか `pressKey: Enter` で確定する
+
+**Flow file パターン:**
+
+```yaml
+appId: host.exp.Exponent
+---
+# Expo Go でプロジェクトを開く
+- openLink: exp://localhost:8081
+
+# 開発者メニューが表示されていれば閉じる（条件付き実行）
+- runFlow:
+    when:
+      visible: 'Continue'
+    commands:
+      - tapOn: 'Continue'
+
+# 要素までスクロール
+- scrollUntilVisible:
+    element:
+      id: 'input-name'
+    direction: DOWN
+    timeout: 30000
+
+# テキスト入力（既存テキストをクリア → 入力 → 確定）
+- tapOn:
+    id: 'input-name'
+- eraseText: 50
+- inputText: 'TestUser'
+- pressKey: Enter
 ```
 
 ### Key Configuration (app.json)

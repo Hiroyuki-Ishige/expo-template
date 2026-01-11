@@ -167,6 +167,7 @@ export default function Index() {
                   name="name"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
+                      testID="input-name"
                       placeholder="山田太郎"
                       value={value}
                       onChangeText={onChange}
@@ -193,6 +194,7 @@ export default function Index() {
                   name="email"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
+                      testID="input-email"
                       placeholder="example@email.com"
                       value={value}
                       onChangeText={onChange}
@@ -372,6 +374,7 @@ export default function Index() {
                   render={({ field: { onChange, value } }) => (
                     <XStack gap="$2" style={{ alignItems: 'center' }}>
                       <Checkbox
+                        testID="checkbox-terms"
                         id="agreeToTerms"
                         checked={value}
                         onCheckedChange={onChange}
@@ -396,7 +399,11 @@ export default function Index() {
                 )}
               </YStack>
 
-              <Button theme="blue" onPress={handleSubmit(onSubmit)}>
+              <Button
+                testID="button-submit"
+                theme="blue"
+                onPress={handleSubmit(onSubmit)}
+              >
                 送信
               </Button>
             </YStack>
@@ -413,13 +420,28 @@ export default function Index() {
               Zustand カウンターサンプル
             </Paragraph>
             <YStack gap="$3" style={{ alignItems: 'center' }}>
-              <Text style={{ fontSize: 48, fontWeight: 'bold' }}>{count}</Text>
+              <Text
+                testID="counter-value"
+                style={{ fontSize: 48, fontWeight: 'bold' }}
+              >
+                {count}
+              </Text>
               <XStack gap="$2">
-                <Button theme="red" onPress={decrement}>
+                <Button
+                  testID="button-decrement"
+                  theme="red"
+                  onPress={decrement}
+                >
                   -1
                 </Button>
-                <Button onPress={resetCounter}>Reset</Button>
-                <Button theme="blue" onPress={increment}>
+                <Button testID="button-reset" onPress={resetCounter}>
+                  Reset
+                </Button>
+                <Button
+                  testID="button-increment"
+                  theme="blue"
+                  onPress={increment}
+                >
                   +1
                 </Button>
               </XStack>
