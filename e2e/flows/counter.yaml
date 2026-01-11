@@ -5,33 +5,24 @@ appId: host.exp.Exponent
 # Expo Go でプロジェクトを開く
 - openLink: exp://localhost:8081
 
-# 開発者メニューが表示されていれば閉じる
+# アプリ読み込み待機
+- extendedWaitUntil:
+    visible: "Expo Template"
+    timeout: 60000
+
+# 開発者メニューが表示されていれば閉じる（条件付き実行）
 - runFlow:
     when:
       visible: "Continue"
     commands:
       - tapOn: "Continue"
-
-# 前のテストからのアラートが残っていれば閉じる
-- runFlow:
-    when:
-      visible: "OK"
-    commands:
-      - tapOn: "OK"
 
 # Resetボタンまでスクロール
 - scrollUntilVisible:
     element:
       text: "Reset"
     direction: DOWN
-    timeout: 30000
-
-# 開発者メニューが再度表示されたら閉じる
-- runFlow:
-    when:
-      visible: "Continue"
-    commands:
-      - tapOn: "Continue"
+    timeout: 60000
 
 # Resetボタンが見えることを確認
 - assertVisible: "Reset"

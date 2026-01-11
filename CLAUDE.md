@@ -179,13 +179,16 @@ brew install mobile-dev-inc/tap/maestro
 **テスト実行:**
 
 ```bash
-# 前提: iOS Simulator で Expo Go アプリを起動しておく
-npx expo start --ios
-# 別ターミナルで:
-npm run e2e           # 全E2Eテスト実行
-npm run e2e:form      # フォーム入力テスト
-npm run e2e:counter   # カウンターテスト
+npm run e2e           # 全E2Eテスト実行（要: Simulator + Expo起動済み）
+npm run e2e:form      # フォーム入力テスト（要: Simulator + Expo起動済み）
+npm run e2e:counter   # カウンターテスト（要: Simulator + Expo起動済み）
 ```
+
+**E2Eテスト実行前の準備:**
+
+1. iOS Simulatorを起動: `open -a Simulator`
+2. Expoサーバーを起動: `npx expo start --ios`（Expo Goが自動インストールされる）
+3. アプリがSimulatorで表示されたらE2Eテストを実行
 
 **Expo Go の制限事項:**
 
@@ -201,12 +204,20 @@ appId: host.exp.Exponent
 # Expo Go でプロジェクトを開く
 - openLink: exp://localhost:8081
 
+# アプリ読み込み待機（常に表示される要素を指定）
+- extendedWaitUntil:
+    visible: 'index' # ヘッダータイトルなど確実に見える要素
+    timeout: 60000
+
 # 開発者メニューが表示されていれば閉じる（条件付き実行）
 - runFlow:
     when:
       visible: 'Continue'
     commands:
       - tapOn: 'Continue'
+
+# 画面上部にスクロール（複数テスト実行時の状態リセット）
+- scroll
 
 # 要素までスクロール
 - scrollUntilVisible:
@@ -222,6 +233,12 @@ appId: host.exp.Exponent
 - inputText: 'TestUser'
 - pressKey: Enter
 ```
+
+**注意点:**
+
+- 複数のフローが並行実行されるため、各フローは他のテスト実行後の画面状態でも動作するように設計する
+- `extendedWaitUntil` には常に画面に表示される要素（ヘッダーなど）を指定する
+- スクロール位置をリセットするために `- scroll` を使用する
 
 ### Key Configuration (app.json)
 
