@@ -136,6 +136,158 @@ export const useExampleStore = create<ExampleState>((set) => ({
 import Component from '@/components/MyComponent'; // @/* → project root
 ```
 
+## Testing Strategy
+
+テストピラミッドの原則に基づき、各テスト種類の役割を明確化。
+
+### テスト種類と役割
+
+| テスト種類 | 目的                         | 実行速度 | 実行頻度      |
+| ---------- | ---------------------------- | -------- | ------------- |
+| 単体テスト | ビジネスロジックの正確性検証 | 高速     | コミット毎    |
+| 結合テスト | 複数ユニットの連携検証       | 中速     | コミット毎    |
+| E2Eテスト  | ユーザー視点での機能検証     | 低速     | PR/リリース前 |
+
+### テスト対象マトリックス
+
+| 対象                                   | 単体 | 結合 | E2E             |
+| -------------------------------------- | ---- | ---- | --------------- |
+| Zustandストア（状態管理ロジック）      | ✅   | -    | -               |
+| Zodスキーマ（バリデーションルール）    | ✅   | -    | -               |
+| ユーティリティ関数                     | ✅   | -    | -               |
+| カスタムフック（ビジネスロジック含む） | ✅   | -    | -               |
+| フォーム送信フロー                     | -    | ✅   | ✅ ハッピーパス |
+| ストア連携UI                           | -    | ✅   | ✅ ハッピーパス |
+| ナビゲーション遷移                     | -    | -    | ✅              |
+| 視覚的レイアウト                       | -    | -    | 手動確認        |
+
+### 単体テスト方針
+
+**テスト対象:**
+
+- Zustandストア: 状態変更ロジック、派生状態の計算
+- Zodスキーマ: バリデーションルール（正常系・異常系）
+- ユーティリティ関数: 純粋関数のI/O検証
+- カスタムフック: ビジネスロジックを含むもの
+
+**テストしない:**
+
+- Tamaguiコンポーネントの見た目（testID制限のため）
+- React Nativeコアコンポーネント
+- サードパーティライブラリの内部動作
+
+**Zodスキーマテスト例:**
+
+```typescript
+import { formSchema } from '@/schemas/form-schema';
+
+describe('formSchema', () => {
+  it('should reject empty name', () => {
+    const result = formSchema.safeParse({
+      name: '',
+      email: 'test@example.com',
+      agreeToTerms: true,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject invalid email', () => {
+    const result = formSchema.safeParse({
+      name: 'Test',
+      email: 'invalid',
+      agreeToTerms: true,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('should accept valid data', () => {
+    const result = formSchema.safeParse({
+      name: 'Test',
+      email: 'test@example.com',
+      agreeToTerms: true,
+    });
+    expect(result.success).toBe(true);
+  });
+});
+```
+
+### 結合テスト方針
+
+**テスト対象:**
+
+- フォーム全体（React Hook Form + Zod + Submit処理）
+- ストアとコンポーネントの連携
+- API呼び出しを含むフロー（モック使用）
+
+**注意点:**
+
+- TamaguiコンポーネントはtestIDが機能しないため、`getByText`や`getByRole`を使用
+- 重いテストになりがちなので本当に必要な箇所のみ実装
+- APIはモック化して外部依存を排除
+
+**結合テスト例:**
+
+```typescript
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
+
+jest.spyOn(Alert, 'alert');
+
+it('should show success alert on valid form submission', async () => {
+  const { getByTestId, getByText } = render(<FormComponent />);
+
+  fireEvent.changeText(getByTestId('input-name'), 'TestUser');
+  fireEvent.changeText(getByTestId('input-email'), 'test@example.com');
+  fireEvent.press(getByText('利用規約に同意する'));
+  fireEvent.press(getByText('送信'));
+
+  await waitFor(() => {
+    expect(Alert.alert).toHaveBeenCalledWith('送信成功', expect.any(String));
+  });
+});
+```
+
+### E2Eテスト方針
+
+**テスト対象:**
+
+- クリティカルユーザージャーニー（ハッピーパスのみ）
+- 主要機能の動作確認
+- 実機/シミュレーター固有の動作
+
+**テストしない:**
+
+- エッジケース（単体/結合テストで網羅）
+- 全エラーパターン（代表的なもののみ）
+- パフォーマンス（別途計測）
+
+**E2Eテストのスコープ:**
+
+```
+フォーム送信: 正常入力 → 送信 → 成功アラート表示
+カウンター: +1 → +1 → -1 → Reset → 0表示確認
+```
+
+### テストファイル配置
+
+```
+__tests__/
+├── stores/           # Zustandストアのテスト
+│   └── counter-store.test.ts
+├── schemas/          # Zodスキーマのテスト
+│   └── form-schema.test.ts
+├── utils/            # ユーティリティ関数のテスト
+├── hooks/            # カスタムフックのテスト
+└── integration/      # 結合テスト
+    └── form-submission.test.tsx
+
+e2e/flows/            # E2Eテスト（Maestro）
+├── counter.yaml
+└── form-submission.yaml
+```
+
+---
+
 ### Testing (Unit)
 
 Jest + jest-expo + React Native Testing Library:
